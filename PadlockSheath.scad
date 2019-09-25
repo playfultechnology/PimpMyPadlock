@@ -9,26 +9,36 @@
 * Gold, Ivory, Jade, Brass, Bronze
 *
 * For improved durability, resin coat the sheath after printing
-   __
-  /  \
- _|  |_
-|      |
-|      |
-|______|
-    
+
+Front View     Side View
+   _____             _
+  /  _  \           | |
+  | | | |           | |
+ _| |_| |_         _| |_
+|      (  )       |     |
+|      (  )       |     |
+|      (  )       |     |
+|______(__)       |_____|
+ Width_A           Depth  
 */
+
+//Width_A is from flat edge to centre of cylindrical barrel
+Padlock_Width_A = 33;
+Padlock_Depth = 14;
+Sheath_Thickness = 2;
+Barrel_Radius = 8.5;
+
 
 // Library for creating textured surface from heightmap image data
 include <PolyhedronHelper.scad>
 
+// EXPERIMENTAL!
 // Include any textures required here
 // Created from images using separate Python script
 // include <Textures/Slate.scad>
 
 // Include any ornamentations required here
 Ornament = "Skull"; // [LionHead,DragonHead,WingedSphinx,Skull]
-
-ShackleCutout = "Holes"; //[Holes,Bar]
 
 fourComboPadlock();
 
@@ -72,33 +82,34 @@ module fourComboPadlock() {
         // SOLID EXTERIOR BLOCK
         union(){
             // Main block
-            cube([35, 18, 48]);
+            cube([Padlock_Width_A+Sheath_Thickness, Padlock_Depth + (2*Sheath_Thickness), 48]);
             
             // Add textured sides
             // Front
             if(str(texture_data) != "undef") {
-                resize([35,1,35]) rotate([90,0,0])
-                polyhedron_from_surface(texture_data, 25, 25, 1, 2, false);
+                resize([Padlock_Width_A+Sheath_Thickness,1,35]) rotate([90,0,0])
+                polyhedron_from_surface(texture_data, 35, 35, 1, 2, false);
             }
             // Back
             if(str(texture_data) != "undef") {
-                translate([35,18,0]) rotate([90,0,180])
+                translate([Padlock_Width_A+Sheath_Thickness,18,0]) rotate([90,0,180])
                 polyhedron_from_surface(slate_data, 35, 48, 1, 2, false);
             }
             
             // Cylinder
             translate([35,9,0])
-                cylinder(h = 48, r=10.5, center = false, $fn=100);
+                cylinder(h = 48, r=Barrel_Radius+Sheath_Thickness, center = false, $fn=100);
         }
             
         // HOLLOW OUT CAVITY FOR PADLOCK
         // Padlock body
         translate([2,2,2])
         union(){
-            // outer block
-            cube([31, 14, 46]);
-            translate([33,7,0])
-            cylinder(h = 46, r=8.5, center = false, $fn=100);
+            // Main block
+            cube([Padlock_Width_A, Padlock_Depth, 46]);
+            // Barrel
+            translate([Padlock_Width_A+Sheath_Thickness,7,0])
+            cylinder(h = 46, r=Barrel_Radius, center = false, $fn=100);
         }
           
         // Number ring cutout
@@ -108,9 +119,9 @@ module fourComboPadlock() {
         // Cutoff top of model
         translate([0,0,36]){
             union(){
-                cube([35, 18, 48]);
+                cube([Padlock_Width_A+Sheath_Thickness, 18, 48]);
                 translate([35,9,0])
-                    cylinder(h = 48, r=10.5, center = false, $fn=100);
+                    cylinder(h = 48, r=Barrel_Radius+Sheath_Thickness, center = false, $fn=100);
             }
         }
     }
@@ -138,39 +149,31 @@ module fourComboPadlock() {
     difference() {
         union(){
             // outer block
-            cube([35, 18, 16.5]);
+            cube([35, Padlock_Depth + 2*Sheath_Thickness, 16.5]);
             translate([35,9,0])
-            cylinder(h = 12, r=10.5, center = false, $fn=100);
+            cylinder(h = 12, r=Barrel_Radius+Sheath_Thickness, center = false, $fn=100);
         }
             
         // padlock body
         translate([2,2,2])
         union(){
             // outer block
-            cube([33, 14, 48]);
+            cube([33, Padlock_Depth, 48]);
             translate([33,7,0])
-            cylinder(h = 46, r=8.5, center = false, $fn=100);
+            cylinder(h = 46, r=Barrel_Radius, center = false, $fn=100);
         }
    
-        // number ring cutout
+        // Number ring cutout
         translate([28,-20,12])
-        cube([40, 40, 29]);
+          cube([40, 40, 29]);
 
-        // Cutout for shackle
-        if(ShackleCutout == "Holes") {
-            // Circular cutouts for shackle
-            translate([9,9,0])
-                cylinder(h = 46, r=3.6, center = true, $fn=100);
-            translate([35,9,0])
-                cylinder(h = 46, r=3.6, center = true, $fn=100);
-        }
-        else {
-            // Single channel cutout
-            translate([6,5.5,0])
-                cube([32.5, 7, 22]);
-        }
-        
-        // Extra cutout to allow shackle to pass over without obstruction
+        // Cutout holes for shackle
+        translate([9,9,0])
+            cylinder(h = 46, r=3.6, center = true, $fn=100);
+        translate([35,9,0])
+            cylinder(h = 46, r=3.6, center = true, $fn=100);
+
+        // Cutout channel in top cover to allow shackle to pass over without obstruction
         translate([35,9,0]) rotate([0,0,180])
         rotate_extrude(convexity = 10, angle = 30)
             translate([26, 1, 0])
