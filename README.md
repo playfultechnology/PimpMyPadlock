@@ -5,7 +5,7 @@ OpenSCAD script for creating sheaths to theme escape room padlocks.
 ![Example Padlock Sheaths](PimpMyPadlock_Examples.jpg?raw=true "Example Padlock Sheaths")
 
 ## Screenshot
-![Screenshot](screenshot.jpg?raw=true "Screenshot")
+![Screenshot](screenshot.png?raw=true "Screenshot")
 
 ## Licence
  - Winged Sphinx by nestra is licensed under the Creative Commons - Attribution license. https://www.thingiverse.com/thing:2995393
